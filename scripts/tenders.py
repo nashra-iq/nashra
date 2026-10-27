@@ -2,7 +2,7 @@
 import json, re, urllib.request, html, datetime as dt, email.utils, sys, os
 UA={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0 Safari/537.36","Accept-Language":"ar"}
 KW=re.compile("مناقص|مزايد|إحال|احال|إعلان|اعلان|عطاء|تعاقد|متعاقد|عقود|العروض")
-def get(u,t=40): return urllib.request.urlopen(urllib.request.Request(u,headers=UA),timeout=t).read().decode("utf-8","replace")
+def get(u,t=25): return urllib.request.urlopen(urllib.request.Request(u,headers=UA),timeout=t).read().decode("utf-8","replace")
 def clean(s): return re.sub(r"\s+"," ",html.unescape(re.sub(r"<[^>]+>"," ",s))).strip()
 def rss(u,src):
     x=get(u); out=[]
@@ -12,13 +12,13 @@ def rss(u,src):
         d=g2("pubDate")
         try: d=email.utils.parsedate_to_datetime(d).date().isoformat()
         except Exception: d=""
-        out.append({"t":g2("title"),"s":src,"d":d,"u":g2("link")})
+        out.append({"t":g2("title"),"s":src,"d":d,"u":g2("link"),"b":g2("content:encoded") or g2("description")})
     return out
 def wp(base,src):
     out=[]
     for q in ("مناقصة","اعلان","إحالة"):
-        j=json.loads(get(base+"/wp-json/wp/v2/posts?per_page=50&_fields=date,link,title&search="+urllib.parse.quote(q)))
-        out+=[{"t":clean(p["title"]["rendered"]),"s":src,"d":p["date"][:10],"u":p["link"]} for p in j]
+        j=json.loads(get(base+"/wp-json/wp/v2/posts?per_page=50&_fields=date,link,title,content&search="+urllib.parse.quote(q)))
+        out+=[{"t":clean(p["title"]["rendered"]),"s":src,"d":p["date"][:10],"u":p["link"],"b":clean(p.get("content",{}).get("rendered",""))} for p in j]
     return out
 def karbala():
     out=[]
@@ -55,6 +55,15 @@ seen=set(); u=[]
 for i in items:
     if i["u"] in seen: continue
     seen.add(i["u"]); u.append(i)
+CO=re.compile(r"(?:شركة|شركه|مكتب|مؤسسة)\s+(?:[^\s،,.:()\-]+\s*){1,5}?(?:المحدودة|المحدوده|للمقاولات[^\s،,.]*|العامة|المساهمة|\(م\.م\)|ذ\.م\.م)?")
+for i in u:
+    if i["s"]=="محافظة كربلاء" and not i.get("b"):
+        try: i["b"]=clean(re.sub(r"(?s)<(script|style|nav|header|footer).*?</\1>","",get(i["u"],25)))[:4000]
+        except Exception: pass
+    b=i.get("b","")
+    c=sorted({m.group(0).strip() for m in CO.finditer(i["t"]+" "+b) if len(m.group(0))>8})
+    i["b"]=b[:1500]
+    if c: i["c"]=c[:20]
 u.sort(key=lambda i:i["d"] or "0",reverse=True)
 json.dump({"updated":dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),"stat":stat,"items":u},open("tenders.json","w"),ensure_ascii=False,indent=0)
 print(stat,len(u))
