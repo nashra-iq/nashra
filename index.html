@@ -15,7 +15,7 @@ function go(){const s=N(q.value.trim());o.innerHTML="";if(s.length<2){c.textCont
 const h=I.filter(x=>x[0].includes(s)).reverse();c.textContent=h.length+" نتيجة";sanc();
 o.innerHTML=h.slice(0,300).map(x=>`<div class="r">${E(x[1])}<div class="m">${E(x[2][0])} — العدد ${E(x[2][1]||"؟")} — <a target="_blank" rel="noopener noreferrer" href="${E(PL(x[2][2]))}">افتح النشرة PDF</a></div></div>`).join("")}
 let SI=null;fetch("sanctions.json",{cache:"no-cache"}).then(r=>r.json()).then(j=>{SI=j.map(e=>[[e.n,...e.a].map(x=>" "+L(x)+" "),e]);sanc()}).catch(()=>{});
-function L(x){return N(x.toLowerCase()).replace(/[^\p{L}\p{N} ]/gu," ").replace(/\s+/g," ").trim()}
+function L(x){return N(x.toLowerCase().replace(/['’`ʼ]/g,"")).replace(/[^\p{L}\p{N} ]/gu," ").replace(/\s+/g," ").trim()}
 function sanc(){so.innerHTML="";sx.hidden=true;if(!SI)return;const tk=L(q.value).split(" ").filter(Boolean);if(!tk.length||tk.join("").length<4||(tk.length<2&&tk[0].length<5))return;
 const h=SI.filter(([ns])=>ns.some(n=>tk.every(k=>n.includes(" "+k+" ")))).slice(0,30);if(!h.length)return;
 so.innerHTML=h.map(([,e])=>`<div class="r"><b>${E(e.n)}</b> — ${E(e.l==="UN"?"الأمم المتحدة":"الخزانة الأمريكية OFAC")}<div class="m">${E(e.t||"")} ${e.r?"— "+E(e.r):""} ${e.d?"— أُدرج: "+E(e.d):""}</div>${e.a.length?`<div class="m">أسماء أخرى: ${E(e.a.join(" ، "))}</div>`:""}<div class="m"><a target="_blank" rel="noopener noreferrer" href="${E(e.u)}">المصدر الرسمي</a></div></div>`).join("");sx.hidden=false}
