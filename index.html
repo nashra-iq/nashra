@@ -1,4 +1,4 @@
-<!doctype html><html dir="rtl" lang="ar"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>بحث نشرات الشركات العراقية</title>
+<meta name="referrer" content="no-referrer"><!doctype html><html dir="rtl" lang="ar"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>بحث نشرات الشركات العراقية</title>
 <style>body{font-family:Tahoma,Arial;max-width:900px;margin:20px auto;padding:0 12px;background:#f7f7f7}input{width:100%;font-size:20px;padding:10px}.r{background:#fff;margin:8px 0;padding:10px;border-radius:8px;border:1px solid #ddd}.m{color:#666;font-size:13px}</style>
 <h2>بحث في نشرات دائرة تسجيل الشركات العراقية</h2><p class="m"><span id="n">…</span> نشرة من 2018 حتى اليوم (نشرات 2018–مارس 2022 من أرشيف الإنترنت لأنها حُذفت من الموقع). اكتب اسم الشركة أو جزءًا منه.</p><p class="m" id="u"></p>
 <input id="q" placeholder="اسم الشركة..." autofocus disabled><p id="c" class="m"></p><div id="o"></div>
@@ -10,4 +10,4 @@ fetch("data.json",{cache:"no-cache"}).then(r=>{const lm=r.headers.get("Last-Modi
 let t;q.oninput=()=>{clearTimeout(t);t=setTimeout(go,250)};
 function go(){const s=N(q.value.trim());o.innerHTML="";if(s.length<2){c.textContent="";return}
 const h=I.filter(x=>x[0].includes(s)).reverse();c.textContent=h.length+" نتيجة";
-o.innerHTML=h.slice(0,300).map(x=>`<div class="r">${E(x[1])}<div class="m">${E(x[2][0])} — العدد ${E(x[2][1]||"؟")} — <a target="_blank" rel="noopener" href="${E(x[2][2].startsWith("http")?x[2][2]:B+x[2][2])}">افتح النشرة PDF</a></div></div>`).join("")}</script></html>
+o.innerHTML=h.slice(0,300).map(x=>`<div class="r">${E(x[1])}<div class="m">${E(x[2][0])} — العدد ${E(x[2][1]||"؟")} — <a target="_blank" rel="noopener noreferrer" href="${E(x[2][2].startsWith("http")?x[2][2]:B+x[2][2])}">افتح النشرة PDF</a></div></div>`).join("")}</script></html>
